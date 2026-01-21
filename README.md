@@ -18,10 +18,11 @@ This tool applies a surgical patch to /usr/share/perl5/PVE/Storage/ZFSPoolPlugin
 🚀 Installation
 
 Run this one-liner on all nodes in your cluster:
+```
 Bash
 
 curl -sSL https://raw.githubusercontent.com/MAWK0235/Proxmox-ZFS-Native-Encryption-Fix/refs/heads/main/ProxMoxZFSPatch.sh | bash
-
+```
 🛠 Usage & Workflow
 1. Same Key / Passphrase
 
