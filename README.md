@@ -20,19 +20,12 @@ This tool applies a surgical patch to /usr/share/perl5/PVE/Storage/ZFSPoolPlugin
 Run this one-liner on all nodes in your cluster:
 Bash
 
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/Proxmox-ZFS-Native-Encryption-Fix/main/patch.sh | bash
-
-Alternatively, copy-paste your existing script:
-Bash
-
-sed -i.bak "s/my \$cmd = \['zfs', 'send', '-Rpv'\];/my \$cmd = \['zfs', 'send', '-Rpvw'\];/" /usr/share/perl5/PVE/Storage/ZFSPoolPlugin.pm
-sed -i "/return \$storeid . ':' . \$dataset;/i \    eval { run_command(['zfs', 'load-key', \$zfspath]) };" /usr/share/perl5/PVE/Storage/ZFSPoolPlugin.pm
-systemctl restart pvedaemon pveproxy pvestatd
+curl -sSL https://raw.githubusercontent.com/MAWK0235/Proxmox-ZFS-Native-Encryption-Fix/refs/heads/main/ProxMoxZFSPatch.sh | bash
 
 🛠 Usage & Workflow
 1. Same Key / Passphrase
 
-For the best experience, ensure your destination node uses the same encryption passphrase or keyfile as the source.
+For the best experience, ensure your destination node uses the same encryption passphrase or keyfile as the source and of course same pool name.
 2. Migration Behavior
 
     With Keyfile: If you use a keyfile stored in /etc/pve/priv/, migration is 100% automatic.
