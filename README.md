@@ -35,7 +35,8 @@ For the best experience, ensure your destination node uses the same encryption p
 ## ⏪ How to Undo
 If you need to revert to stock Proxmox settings, run:
 ```bash
-curl -sSL [https://raw.githubusercontent.com/MAWK0235/Proxmox-ZFS-Native-Encryption-Fix/main/undo.sh](https://raw.githubusercontent.com/MAWK0235/Proxmox-ZFS-Native-Encryption-Fix/main/undo.sh) | bash```
+curl -sSL [https://raw.githubusercontent.com/MAWK0235/Proxmox-ZFS-Native-Encryption-Fix/main/undo.sh](https://raw.githubusercontent.com/MAWK0235/Proxmox-ZFS-Native-Encryption-Fix/main/undo.sh) | bash
+```
 
 ⚠️ Important Notes
 
