@@ -32,6 +32,11 @@ For the best experience, ensure your destination node uses the same encryption p
 
     With Passphrase: The migration task will "pause" at the very end. You must open the Node Shell on the target node, where you will see a prompt to enter your passphrase. Once entered, the container/VM will start automatically.
 
+## ⏪ How to Undo
+If you need to revert to stock Proxmox settings, run:
+```bash
+curl -sSL [https://raw.githubusercontent.com/MAWK0235/Proxmox-ZFS-Native-Encryption-Fix/main/undo.sh](https://raw.githubusercontent.com/MAWK0235/Proxmox-ZFS-Native-Encryption-Fix/main/undo.sh) | bash
+
 ⚠️ Important Notes
 
     Updates: Proxmox updates will overwrite these changes. You should re-run the patch after updating libpve-storage-perl.
