@@ -2,26 +2,35 @@
 FILE="/usr/share/perl5/PVE/Storage/ZFSPoolPlugin.pm"
 BACKUP="$FILE.bak"
 
-echo "Reverting Proxmox ZFS Native Encryption Patch..."
+echo "--- Proxmox ZFS Native Encryption Patch ---"
 
-if [ -f "$BACKUP" ]; then
-    # Method 1: Restore from backup (always safe & complete)
-    cp "$BACKUP" "$FILE"
-    echo "✅ Restored from backup: $BACKUP"
-else
-    # Method 2: Try to revert common patterns (fallback)
-    echo "⚠️ Backup missing. Attempting manual revert..."
-    sed -i "s/'zfs', 'send', '-RpvUw'/'zfs', 'send', '-RpvU'/g" "$FILE"
-    sed -i "s/'zfs', 'send', '-RpvU'/'zfs', 'send', '-Rpv'/g" "$FILE"  # handle legacy -RpvU
-    sed -i "/eval { run_command(\['zfs', 'load-key', \$zfspath\]) };/d" "$FILE"
-    echo "✅ Manual revert attempted."
+# 1. Ensure we have a clean backup
+if [ ! -f "$BACKUP" ]; then
+    cp "$FILE" "$BACKUP"
+    echo "💾 Created backup: $BACKUP"
 fi
 
-# Double-check revert worked
-grep -q "load-key" "$FILE" && echo "❌ load-key still present!" || echo "✅ load-key removed"
-grep -q "'-RpvUw'" "$FILE" && echo "❌ -RpvUw still present!" || echo "✅ -RpvUw removed"
+# 2. Update the 'send' command flags
+echo "Updating ZFS send command flags..."
+sed -i "s/my \$cmd = \['zfs', 'send', '-Rpv'\];/my \$cmd = \['zfs', 'send', '-Rpvw'\];/g" "$FILE"
 
-echo "🔄 Restarting services..."
-systemctl restart pvedaemon pveproxy pvestatd
+# 3. Inject load-key logic (Using $volname which is in scope)
+if ! grep -q "load-key" "$FILE"; then
+    echo "Injecting load-key command..."
+    sed -i "/my \$cmd = \['zfs', 'send', '-Rpvw'\];/a \    eval { run_command(['zfs', 'load-key', \$volname]); };" "$FILE"
+else
+    echo "⚠️ load-key logic already exists."
+fi
 
-echo "Done. Back to stock encryption behavior."
+# 4. CRITICAL: Syntax Check
+echo "Running Perl syntax verification..."
+if perl -c "$FILE" 2>&1 | grep -q "syntax OK"; then
+    echo "✅ Syntax check passed!"
+    echo "🔄 Restarting services..."
+    systemctl restart pvedaemon pveproxy pvestatd
+    echo "Done."
+else
+    echo "❌ ERROR: Syntax check failed! Reverting changes."
+    cp "$BACKUP" "$FILE"
+    exit 1
+fi
